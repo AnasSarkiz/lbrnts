@@ -1,4 +1,5 @@
 import {parseXml} from "./xml-parsing/parseXml";
+import type { XmlJson, XmlJsonValue } from "./xml-parsing/xml-parsing-types";
 
 export class BaseLightBurnElement {
   abstract token: string;
@@ -47,29 +48,26 @@ export class BaseLightBurnElement {
     if (!newClass.token) {
       throw new Error("Class must have a static override token")
     }
-    const parentKey = newClass.parentToken ?? DEFAULT_PARENT_TOKEN
-    const existing = BaseLightBurnElement.classes[newClass.token] ?? {}
-    existing[parentKey] = newClass
-    BaseLightBurnElement.classes[newClass.token] = existing
+    BaseLightBurnElement.classes[newClass.token] = newClass
   }
 
   /**
    * Parse an XML string into registered BaseLightBurnElement instances
    */
   static parse(sexpr: string): BaseLightBurnElement[] {
-    const xmlJson = parseXml(sexpr)
+    const xmlJson: XmlJson = parseXml(sexpr)
 
     return BaseLightBurnElement.parseXmlJson(xmlJson) as BaseLightBurnElement[]
   }
 
-  static fromXmlJson(xmlJson: any): BaseLightBurnElement {
+  static fromXmlJson(xmlJson: XmlJsonValue): BaseLightBurnElement {
     throw new Error(
       `"${this.name}" class has not implemented fromSexprPrimitives`,
     )
   }
 
   static parseXmlJson(
-    xmlJson: any,
+    xmlJson: XmlJsonValue,
   ): BaseLightBurnElement | BaseLightBurnElement[] | number | string | boolean | null {
     // if (
     //   Array.isArray(primitiveSexpr) &&

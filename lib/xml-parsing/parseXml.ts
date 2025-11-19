@@ -1,8 +1,9 @@
 import { parseString } from "xml2js"
+import type { XmlJson } from "./xml-parsing-types"
 
-export const parseXml = (xml: string): any => {
+export const parseXml = (xml: string): XmlJson => {
   let err: Error | null = null
-  let result: any = null
+  let result: XmlJson | null = null
 
   parseString(xml, (err_, result_) => {
     err = err_
@@ -11,6 +12,10 @@ export const parseXml = (xml: string): any => {
 
   if (err) {
     throw err
+  }
+
+  if (!result) {
+    throw new Error("Failed to parse XML")
   }
 
   return result
