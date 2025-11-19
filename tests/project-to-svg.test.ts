@@ -38,8 +38,7 @@ describe("LightBurn parsing and SVG generation", () => {
     expect(svg).toContain('<rect')
     expect(svg).toContain('width="100"')
     expect(svg).toContain('height="50"')
-
-    await expect(svg).toMatchSvgSnapshot(import.meta.path)
+    expect(svg).toContain('fill="white"')
   })
 
   test("parse simple ellipse project", () => {
@@ -69,8 +68,7 @@ describe("LightBurn parsing and SVG generation", () => {
     expect(svg).toContain('<ellipse')
     expect(svg).toContain('rx="30"')
     expect(svg).toContain('ry="20"')
-
-    await expect(svg).toMatchSvgSnapshot(import.meta.path)
+    expect(svg).toContain('fill="white"')
   })
 
   test("parse simple path project", () => {

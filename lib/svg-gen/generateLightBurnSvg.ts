@@ -218,6 +218,7 @@ export function generateLightBurnSvg(root: LightBurnBaseElement | LightBurnBaseE
   const shapeSvgs = shapes.map(svgForShape).join("\n")
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="${viewBox}">
+  <rect width="100%" height="100%" fill="white"/>
   <g transform="matrix(1 0 0 -1 0 ${height})">
 ${shapeSvgs}
   </g>
