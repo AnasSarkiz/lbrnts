@@ -250,6 +250,11 @@ function svgForShape(shape: ShapeBase): INode {
       }
     }
 
+    // Close the path
+    if (d.length > 0) {
+      d += " Z"
+    }
+
     return {
       name: "g",
       type: "element",
