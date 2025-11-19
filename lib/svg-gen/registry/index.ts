@@ -1,12 +1,12 @@
 import type { INode } from "svgson"
-import { boxUnion, emptyBox, type BBox } from "../_math"
 import type { ShapeBase } from "../../classes/elements/shapes/ShapeBase"
-import { rectRenderer } from "./shape-rect"
-import { ellipseRenderer } from "./shape-ellipse"
-import { pathRenderer } from "./shape-path"
+import { type BBox, boxUnion, emptyBox } from "../_math"
 import { bitmapRenderer } from "./shape-bitmap"
-import { textRenderer } from "./shape-text"
+import { ellipseRenderer } from "./shape-ellipse"
 import { groupRenderer } from "./shape-group"
+import { pathRenderer } from "./shape-path"
+import { rectRenderer } from "./shape-rect"
+import { textRenderer } from "./shape-text"
 
 export interface ShapeRenderer<T extends ShapeBase = ShapeBase> {
   match(shape: ShapeBase): shape is T

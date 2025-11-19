@@ -1,7 +1,7 @@
-import { LightBurnBaseElement } from "../../LightBurnBaseElement"
 import type { XmlJsonElement } from "../../../xml-parsing/xml-parsing-types"
-import { ShapeBase } from "./ShapeBase"
+import { LightBurnBaseElement } from "../../LightBurnBaseElement"
 import { num } from "../_coerce"
+import { ShapeBase } from "./ShapeBase"
 
 export class ShapeRect extends ShapeBase {
   w?: number

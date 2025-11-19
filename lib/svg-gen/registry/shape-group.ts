@@ -1,17 +1,17 @@
 import type { INode } from "svgson"
-import { g } from "../node-helpers"
+import { ShapeBase } from "../../classes/elements/shapes/ShapeBase"
+import { ShapeGroup } from "../../classes/elements/shapes/ShapeGroup"
 import {
   arrayToMatrix,
+  type BBox,
   boxUnion,
   emptyBox,
   identity,
   matToSvg,
-  type BBox,
 } from "../_math"
-import { ShapeGroup } from "../../classes/elements/shapes/ShapeGroup"
-import { ShapeBase } from "../../classes/elements/shapes/ShapeBase"
-import { bboxOfShape, svgForShape } from "./index"
+import { g } from "../node-helpers"
 import type { ShapeRenderer } from "./index"
+import { bboxOfShape, svgForShape } from "./index"
 
 export const groupRenderer: ShapeRenderer<ShapeGroup> = {
   match: (s): s is ShapeGroup => s instanceof ShapeGroup,

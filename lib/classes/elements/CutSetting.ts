@@ -1,9 +1,34 @@
-import { LightBurnBaseElement } from "../LightBurnBaseElement"
 import type { XmlJsonElement } from "../../xml-parsing/xml-parsing-types"
-import { num, str, boolish } from "./_coerce"
+import { LightBurnBaseElement } from "../LightBurnBaseElement"
+import { boolish, num, str } from "./_coerce"
+
+export interface CutSettingInit {
+  type?: string
+  index?: number
+  name?: string
+  priority?: number
+  minPower?: number
+  maxPower?: number
+  minPower2?: number
+  maxPower2?: number
+  speed?: number
+  kerf?: number
+  zOffset?: number
+  enablePowerRamp?: boolean
+  rampLength?: number
+  numPasses?: number
+  zPerPass?: number
+  perforate?: boolean
+  dotMode?: boolean
+  scanOpt?: string
+  interval?: number
+  angle?: number
+  overScanning?: number
+  lineAngle?: number
+}
 
 export class CutSetting extends LightBurnBaseElement {
-  private _type: string = "Cut"
+  private _type = "Cut"
   private _index?: number
   private _name?: string
   private _priority?: number
@@ -26,76 +51,190 @@ export class CutSetting extends LightBurnBaseElement {
   private _overScanning?: number
   private _lineAngle?: number
 
-  constructor() {
+  constructor(init?: CutSettingInit) {
     super()
     this.token = "CutSetting"
+    if (init) {
+      if (init.type !== undefined) this._type = init.type
+      if (init.index !== undefined) this._index = init.index
+      if (init.name !== undefined) this._name = init.name
+      if (init.priority !== undefined) this._priority = init.priority
+      if (init.minPower !== undefined) this._minPower = init.minPower
+      if (init.maxPower !== undefined) this._maxPower = init.maxPower
+      if (init.minPower2 !== undefined) this._minPower2 = init.minPower2
+      if (init.maxPower2 !== undefined) this._maxPower2 = init.maxPower2
+      if (init.speed !== undefined) this._speed = init.speed
+      if (init.kerf !== undefined) this._kerf = init.kerf
+      if (init.zOffset !== undefined) this._zOffset = init.zOffset
+      if (init.enablePowerRamp !== undefined)
+        this._enablePowerRamp = init.enablePowerRamp
+      if (init.rampLength !== undefined) this._rampLength = init.rampLength
+      if (init.numPasses !== undefined) this._numPasses = init.numPasses
+      if (init.zPerPass !== undefined) this._zPerPass = init.zPerPass
+      if (init.perforate !== undefined) this._perforate = init.perforate
+      if (init.dotMode !== undefined) this._dotMode = init.dotMode
+      if (init.scanOpt !== undefined) this._scanOpt = init.scanOpt
+      if (init.interval !== undefined) this._interval = init.interval
+      if (init.angle !== undefined) this._angle = init.angle
+      if (init.overScanning !== undefined)
+        this._overScanning = init.overScanning
+      if (init.lineAngle !== undefined) this._lineAngle = init.lineAngle
+    }
   }
 
-  get type(): string { return this._type }
-  set type(value: string) { this._type = value }
+  get type(): string {
+    return this._type
+  }
+  set type(value: string) {
+    this._type = value
+  }
 
-  get index(): number | undefined { return this._index }
-  set index(value: number | undefined) { this._index = value }
+  get index(): number | undefined {
+    return this._index
+  }
+  set index(value: number | undefined) {
+    this._index = value
+  }
 
-  get name(): string | undefined { return this._name }
-  set name(value: string | undefined) { this._name = value }
+  get name(): string | undefined {
+    return this._name
+  }
+  set name(value: string | undefined) {
+    this._name = value
+  }
 
-  get priority(): number | undefined { return this._priority }
-  set priority(value: number | undefined) { this._priority = value }
+  get priority(): number | undefined {
+    return this._priority
+  }
+  set priority(value: number | undefined) {
+    this._priority = value
+  }
 
-  get minPower(): number | undefined { return this._minPower }
-  set minPower(value: number | undefined) { this._minPower = value }
+  get minPower(): number | undefined {
+    return this._minPower
+  }
+  set minPower(value: number | undefined) {
+    this._minPower = value
+  }
 
-  get maxPower(): number | undefined { return this._maxPower }
-  set maxPower(value: number | undefined) { this._maxPower = value }
+  get maxPower(): number | undefined {
+    return this._maxPower
+  }
+  set maxPower(value: number | undefined) {
+    this._maxPower = value
+  }
 
-  get minPower2(): number | undefined { return this._minPower2 }
-  set minPower2(value: number | undefined) { this._minPower2 = value }
+  get minPower2(): number | undefined {
+    return this._minPower2
+  }
+  set minPower2(value: number | undefined) {
+    this._minPower2 = value
+  }
 
-  get maxPower2(): number | undefined { return this._maxPower2 }
-  set maxPower2(value: number | undefined) { this._maxPower2 = value }
+  get maxPower2(): number | undefined {
+    return this._maxPower2
+  }
+  set maxPower2(value: number | undefined) {
+    this._maxPower2 = value
+  }
 
-  get speed(): number | undefined { return this._speed }
-  set speed(value: number | undefined) { this._speed = value }
+  get speed(): number | undefined {
+    return this._speed
+  }
+  set speed(value: number | undefined) {
+    this._speed = value
+  }
 
-  get kerf(): number | undefined { return this._kerf }
-  set kerf(value: number | undefined) { this._kerf = value }
+  get kerf(): number | undefined {
+    return this._kerf
+  }
+  set kerf(value: number | undefined) {
+    this._kerf = value
+  }
 
-  get zOffset(): number | undefined { return this._zOffset }
-  set zOffset(value: number | undefined) { this._zOffset = value }
+  get zOffset(): number | undefined {
+    return this._zOffset
+  }
+  set zOffset(value: number | undefined) {
+    this._zOffset = value
+  }
 
-  get enablePowerRamp(): boolean | undefined { return this._enablePowerRamp }
-  set enablePowerRamp(value: boolean | undefined) { this._enablePowerRamp = value }
+  get enablePowerRamp(): boolean | undefined {
+    return this._enablePowerRamp
+  }
+  set enablePowerRamp(value: boolean | undefined) {
+    this._enablePowerRamp = value
+  }
 
-  get rampLength(): number | undefined { return this._rampLength }
-  set rampLength(value: number | undefined) { this._rampLength = value }
+  get rampLength(): number | undefined {
+    return this._rampLength
+  }
+  set rampLength(value: number | undefined) {
+    this._rampLength = value
+  }
 
-  get numPasses(): number | undefined { return this._numPasses }
-  set numPasses(value: number | undefined) { this._numPasses = value }
+  get numPasses(): number | undefined {
+    return this._numPasses
+  }
+  set numPasses(value: number | undefined) {
+    this._numPasses = value
+  }
 
-  get zPerPass(): number | undefined { return this._zPerPass }
-  set zPerPass(value: number | undefined) { this._zPerPass = value }
+  get zPerPass(): number | undefined {
+    return this._zPerPass
+  }
+  set zPerPass(value: number | undefined) {
+    this._zPerPass = value
+  }
 
-  get perforate(): boolean | undefined { return this._perforate }
-  set perforate(value: boolean | undefined) { this._perforate = value }
+  get perforate(): boolean | undefined {
+    return this._perforate
+  }
+  set perforate(value: boolean | undefined) {
+    this._perforate = value
+  }
 
-  get dotMode(): boolean | undefined { return this._dotMode }
-  set dotMode(value: boolean | undefined) { this._dotMode = value }
+  get dotMode(): boolean | undefined {
+    return this._dotMode
+  }
+  set dotMode(value: boolean | undefined) {
+    this._dotMode = value
+  }
 
-  get scanOpt(): string | undefined { return this._scanOpt }
-  set scanOpt(value: string | undefined) { this._scanOpt = value }
+  get scanOpt(): string | undefined {
+    return this._scanOpt
+  }
+  set scanOpt(value: string | undefined) {
+    this._scanOpt = value
+  }
 
-  get interval(): number | undefined { return this._interval }
-  set interval(value: number | undefined) { this._interval = value }
+  get interval(): number | undefined {
+    return this._interval
+  }
+  set interval(value: number | undefined) {
+    this._interval = value
+  }
 
-  get angle(): number | undefined { return this._angle }
-  set angle(value: number | undefined) { this._angle = value }
+  get angle(): number | undefined {
+    return this._angle
+  }
+  set angle(value: number | undefined) {
+    this._angle = value
+  }
 
-  get overScanning(): number | undefined { return this._overScanning }
-  set overScanning(value: number | undefined) { this._overScanning = value }
+  get overScanning(): number | undefined {
+    return this._overScanning
+  }
+  set overScanning(value: number | undefined) {
+    this._overScanning = value
+  }
 
-  get lineAngle(): number | undefined { return this._lineAngle }
-  set lineAngle(value: number | undefined) { this._lineAngle = value }
+  get lineAngle(): number | undefined {
+    return this._lineAngle
+  }
+  set lineAngle(value: number | undefined) {
+    this._lineAngle = value
+  }
 
   static override fromXmlJson(node: XmlJsonElement): CutSetting {
     const cs = new CutSetting()

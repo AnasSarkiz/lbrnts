@@ -1,4 +1,4 @@
-import { type BBox } from "./_math"
+import type { BBox } from "./_math"
 import { DEFAULT_OPTIONS, type GenerateSvgOptions } from "./options"
 
 export interface Layout {

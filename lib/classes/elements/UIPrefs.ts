@@ -1,5 +1,5 @@
-import { LightBurnBaseElement } from "../LightBurnBaseElement"
 import type { XmlJsonElement } from "../../xml-parsing/xml-parsing-types"
+import { LightBurnBaseElement } from "../LightBurnBaseElement"
 import { str } from "./_coerce"
 
 export class UIPrefs extends LightBurnBaseElement {

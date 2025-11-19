@@ -1,10 +1,10 @@
 import { stringify } from "svgson"
 import type { LightBurnBaseElement } from "../classes/LightBurnBaseElement"
-import { collectShapes } from "./collect"
-import { measure, renderAll } from "./registry"
-import { computeLayout } from "./layout"
 import { assembleSvg } from "./assemble"
+import { collectShapes } from "./collect"
+import { computeLayout } from "./layout"
 import type { GenerateSvgOptions } from "./options"
+import { measure, renderAll } from "./registry"
 
 export type { GenerateSvgOptions } from "./options"
 

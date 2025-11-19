@@ -2,14 +2,14 @@
  * Coercion helpers for parsing XML attributes
  */
 
-export function num(v: any, defaultValue: number = 0): number {
+export function num(v: any, defaultValue = 0): number {
   if (v === null || v === undefined) return defaultValue
   if (typeof v === "number") return v
   const parsed = Number(v)
   return Number.isNaN(parsed) ? defaultValue : parsed
 }
 
-export function boolish(v: any, defaultValue: boolean = false): boolean {
+export function boolish(v: any, defaultValue = false): boolean {
   if (v === null || v === undefined) return defaultValue
   if (typeof v === "boolean") return v
   if (typeof v === "string") {
@@ -21,7 +21,7 @@ export function boolish(v: any, defaultValue: boolean = false): boolean {
   return defaultValue
 }
 
-export function str(v: any, defaultValue: string = ""): string {
+export function str(v: any, defaultValue = ""): string {
   if (v === null || v === undefined) return defaultValue
   return String(v)
 }

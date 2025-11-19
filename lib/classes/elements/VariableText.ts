@@ -1,6 +1,6 @@
-import { LightBurnBaseElement } from "../LightBurnBaseElement"
 import type { XmlJsonElement } from "../../xml-parsing/xml-parsing-types"
-import { num, boolish } from "./_coerce"
+import { LightBurnBaseElement } from "../LightBurnBaseElement"
+import { boolish, num } from "./_coerce"
 
 export class VariableText extends LightBurnBaseElement {
   start?: number

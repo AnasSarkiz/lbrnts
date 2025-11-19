@@ -1,16 +1,16 @@
 import type { INode } from "svgson"
-import { g, leaf } from "../node-helpers"
+import { ShapeEllipse } from "../../classes/elements/shapes/ShapeEllipse"
 import {
   addPts,
   apply,
   arrayToMatrix,
+  type BBox,
   emptyBox,
   identity,
   matToSvg,
-  type BBox,
 } from "../_math"
+import { g, leaf } from "../node-helpers"
 import { colorForCutIndex } from "../palette"
-import { ShapeEllipse } from "../../classes/elements/shapes/ShapeEllipse"
 import type { ShapeRenderer } from "./index"
 
 export const ellipseRenderer: ShapeRenderer<ShapeEllipse> = {
@@ -40,7 +40,13 @@ export const ellipseRenderer: ShapeRenderer<ShapeEllipse> = {
     const stroke = colorForCutIndex(el.cutIndex)
     const child =
       rx === ry
-        ? leaf("circle", { cx: "0", cy: "0", r: String(rx), fill: "none", stroke })
+        ? leaf("circle", {
+            cx: "0",
+            cy: "0",
+            r: String(rx),
+            fill: "none",
+            stroke,
+          })
         : leaf("ellipse", {
             cx: "0",
             cy: "0",

@@ -1,7 +1,7 @@
-import { LightBurnBaseElement } from "../../LightBurnBaseElement"
 import type { XmlJsonElement } from "../../../xml-parsing/xml-parsing-types"
-import { ShapeBase } from "./ShapeBase"
+import { LightBurnBaseElement } from "../../LightBurnBaseElement"
 import { str } from "../_coerce"
+import { ShapeBase } from "./ShapeBase"
 import { ShapePath } from "./ShapePath"
 
 export class ShapeText extends ShapeBase {

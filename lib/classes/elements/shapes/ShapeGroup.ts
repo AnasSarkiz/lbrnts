@@ -1,5 +1,5 @@
-import { LightBurnBaseElement } from "../../LightBurnBaseElement"
 import type { XmlJsonElement } from "../../../xml-parsing/xml-parsing-types"
+import { LightBurnBaseElement } from "../../LightBurnBaseElement"
 import { ShapeBase } from "./ShapeBase"
 
 export class ShapeGroup extends ShapeBase {
@@ -20,10 +20,14 @@ export class ShapeGroup extends ShapeBase {
     if (shapes) {
       if (Array.isArray(shapes)) {
         for (const shape of shapes) {
-          group.children.push(LightBurnBaseElement.instantiateElement("Shape", shape))
+          group.children.push(
+            LightBurnBaseElement.instantiateElement("Shape", shape),
+          )
         }
       } else {
-        group.children.push(LightBurnBaseElement.instantiateElement("Shape", shapes))
+        group.children.push(
+          LightBurnBaseElement.instantiateElement("Shape", shapes),
+        )
       }
     }
 

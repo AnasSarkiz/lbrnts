@@ -1,5 +1,5 @@
-import { LightBurnBaseElement } from "../LightBurnBaseElement"
 import type { XmlJsonElement } from "../../xml-parsing/xml-parsing-types"
+import { LightBurnBaseElement } from "../LightBurnBaseElement"
 import { boolish, str } from "./_coerce"
 
 export class Notes extends LightBurnBaseElement {

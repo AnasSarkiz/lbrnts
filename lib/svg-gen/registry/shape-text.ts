@@ -1,16 +1,16 @@
 import type { INode } from "svgson"
-import { g, textNode } from "../node-helpers"
+import { ShapeText } from "../../classes/elements/shapes/ShapeText"
 import {
   addPts,
   apply,
   arrayToMatrix,
+  type BBox,
   emptyBox,
   identity,
   matToSvg,
-  type BBox,
 } from "../_math"
+import { g, textNode } from "../node-helpers"
 import { colorForCutIndex } from "../palette"
-import { ShapeText } from "../../classes/elements/shapes/ShapeText"
 import type { ShapeRenderer } from "./index"
 
 export const textRenderer: ShapeRenderer<ShapeText> = {
@@ -20,7 +20,9 @@ export const textRenderer: ShapeRenderer<ShapeText> = {
     const xform = t.xform ? arrayToMatrix(t.xform) : identity()
     // Use backup path if available
     if (t.backupPath && t.backupPath.verts.length) {
-      const pts = t.backupPath.verts.map((v) => apply(xform, { x: v.x, y: v.y }))
+      const pts = t.backupPath.verts.map((v) =>
+        apply(xform, { x: v.x, y: v.y }),
+      )
       return addPts(emptyBox(), pts)
     }
     // Fallback to a default size

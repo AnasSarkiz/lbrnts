@@ -1,15 +1,15 @@
 import type { INode } from "svgson"
-import { g, leaf } from "../node-helpers"
+import { ShapeBitmap } from "../../classes/elements/shapes/ShapeBitmap"
 import {
   addPts,
   apply,
   arrayToMatrix,
+  type BBox,
   emptyBox,
   identity,
   matToSvg,
-  type BBox,
 } from "../_math"
-import { ShapeBitmap } from "../../classes/elements/shapes/ShapeBitmap"
+import { g, leaf } from "../node-helpers"
 import type { ShapeRenderer } from "./index"
 
 export const bitmapRenderer: ShapeRenderer<ShapeBitmap> = {

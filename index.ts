@@ -12,29 +12,36 @@ import "./lib/classes/elements/shapes/ShapeGroup"
 import "./lib/classes/elements/shapes/ShapeBitmap"
 import "./lib/classes/elements/shapes/ShapeText"
 
-// Export main classes and functions
-export { LightBurnBaseElement } from "./lib/classes/LightBurnBaseElement"
-export { LightBurnProject } from "./lib/classes/elements/LightBurnProject"
-export { Thumbnail } from "./lib/classes/elements/Thumbnail"
-export { VariableText } from "./lib/classes/elements/VariableText"
-export { UIPrefs } from "./lib/classes/elements/UIPrefs"
+export type { CutSettingInit } from "./lib/classes/elements/CutSetting"
 export { CutSetting } from "./lib/classes/elements/CutSetting"
+export type { LightBurnProjectInit } from "./lib/classes/elements/LightBurnProject"
+export { LightBurnProject } from "./lib/classes/elements/LightBurnProject"
 export { Notes } from "./lib/classes/elements/Notes"
-
+export type { Mat } from "./lib/classes/elements/shapes/ShapeBase"
 // Export shape classes
 export { ShapeBase } from "./lib/classes/elements/shapes/ShapeBase"
-export { ShapeRect } from "./lib/classes/elements/shapes/ShapeRect"
-export { ShapeEllipse } from "./lib/classes/elements/shapes/ShapeEllipse"
-export { ShapePath } from "./lib/classes/elements/shapes/ShapePath"
-export { ShapeGroup } from "./lib/classes/elements/shapes/ShapeGroup"
 export { ShapeBitmap } from "./lib/classes/elements/shapes/ShapeBitmap"
+export { ShapeEllipse } from "./lib/classes/elements/shapes/ShapeEllipse"
+export { ShapeGroup } from "./lib/classes/elements/shapes/ShapeGroup"
+export type {
+  Prim,
+  ShapePathInit,
+  Vert,
+} from "./lib/classes/elements/shapes/ShapePath"
+export { ShapePath } from "./lib/classes/elements/shapes/ShapePath"
+export { ShapeRect } from "./lib/classes/elements/shapes/ShapeRect"
 export { ShapeText } from "./lib/classes/elements/shapes/ShapeText"
-
+export { Thumbnail } from "./lib/classes/elements/Thumbnail"
+export { UIPrefs } from "./lib/classes/elements/UIPrefs"
+export { VariableText } from "./lib/classes/elements/VariableText"
+// Export main classes and functions
+export { LightBurnBaseElement } from "./lib/classes/LightBurnBaseElement"
+export type { GenerateSvgOptions } from "./lib/svg-gen/index"
 // Export SVG generation
 export { generateLightBurnSvg } from "./lib/svg-gen/index"
-export type { GenerateSvgOptions } from "./lib/svg-gen/index"
-
 // Export types
-export type { XmlJson, XmlJsonElement, XmlJsonValue } from "./lib/xml-parsing/xml-parsing-types"
-export type { Mat } from "./lib/classes/elements/shapes/ShapeBase"
-export type { Vert, Prim } from "./lib/classes/elements/shapes/ShapePath"
+export type {
+  XmlJson,
+  XmlJsonElement,
+  XmlJsonValue,
+} from "./lib/xml-parsing/xml-parsing-types"

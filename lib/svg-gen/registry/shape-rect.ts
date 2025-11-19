@@ -1,16 +1,16 @@
 import type { INode } from "svgson"
-import { g, leaf } from "../node-helpers"
+import { ShapeRect } from "../../classes/elements/shapes/ShapeRect"
 import {
   addPts,
   apply,
   arrayToMatrix,
+  type BBox,
   emptyBox,
   identity,
   matToSvg,
-  type BBox,
 } from "../_math"
+import { g, leaf } from "../node-helpers"
 import { colorForCutIndex } from "../palette"
-import { ShapeRect } from "../../classes/elements/shapes/ShapeRect"
 import type { ShapeRenderer } from "./index"
 
 export const rectRenderer: ShapeRenderer<ShapeRect> = {

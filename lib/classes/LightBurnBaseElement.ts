@@ -1,8 +1,8 @@
 import { parseXml } from "../xml-parsing/parseXml"
 import type {
   XmlJson,
-  XmlJsonValue,
   XmlJsonElement,
+  XmlJsonValue,
 } from "../xml-parsing/xml-parsing-types"
 
 export class LightBurnBaseElement {
@@ -75,13 +75,11 @@ export class LightBurnBaseElement {
 
   static fromXmlJson(node: XmlJsonElement): LightBurnBaseElement {
     throw new Error(
-      `"${this.name}" class has not implemented fromXmlJson`,
+      `"${LightBurnBaseElement.name}" class has not implemented fromXmlJson`,
     )
   }
 
-  static parseXmlJson(
-    xmlJson: XmlJsonValue,
-  ): any {
+  static parseXmlJson(xmlJson: XmlJsonValue): any {
     // Handle root object { RootTag: Element }
     if (
       xmlJson &&
@@ -112,12 +110,13 @@ export class LightBurnBaseElement {
       return xmlJson
     }
 
-    throw new Error(
-      `Couldn't parse XML JSON: ${JSON.stringify(xmlJson)}`,
-    )
+    throw new Error(`Couldn't parse XML JSON: ${JSON.stringify(xmlJson)}`)
   }
 
-  static instantiateElement(tag: string, node: XmlJsonElement): LightBurnBaseElement {
+  static instantiateElement(
+    tag: string,
+    node: XmlJsonElement,
+  ): LightBurnBaseElement {
     // Special handling for Shape elements
     if (tag === "Shape") {
       const type = node.$?.Type as string | undefined

@@ -1,6 +1,6 @@
-import { expect, test, describe } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { readFileSync } from "node:fs"
-import { LightBurnBaseElement, generateLightBurnSvg } from "../../index"
+import { generateLightBurnSvg, LightBurnBaseElement } from "../../index"
 
 describe("Images (.lbrn2 v2) - bitmap/engrave objects", () => {
   test("parse and generate SVG snapshot", async () => {
@@ -8,7 +8,7 @@ describe("Images (.lbrn2 v2) - bitmap/engrave objects", () => {
     const project = LightBurnBaseElement.parse(xml)
     const svg = generateLightBurnSvg(project)
 
-    expect(svg).toContain('<svg')
+    expect(svg).toContain("<svg")
     await expect(svg).toMatchSvgSnapshot(import.meta.path)
   })
 })

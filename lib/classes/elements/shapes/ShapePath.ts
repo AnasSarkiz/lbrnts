@@ -1,7 +1,7 @@
-import { LightBurnBaseElement } from "../../LightBurnBaseElement"
 import type { XmlJsonElement } from "../../../xml-parsing/xml-parsing-types"
-import { ShapeBase } from "./ShapeBase"
+import { LightBurnBaseElement } from "../../LightBurnBaseElement"
 import { num } from "../_coerce"
+import { type Mat, ShapeBase } from "./ShapeBase"
 
 export interface Vert {
   x: number
@@ -17,21 +17,41 @@ export interface Prim {
   type: number
 }
 
+export interface ShapePathInit {
+  verts?: Vert[]
+  prims?: Prim[]
+  isClosed?: boolean
+  cutIndex?: number
+  locked?: boolean
+  xform?: Mat
+}
+
 export class ShapePath extends ShapeBase {
   verts: Vert[] = []
   prims: Prim[] = []
-  isClosed: boolean = true // Whether the path is closed (default) or open
+  isClosed = true // Whether the path is closed (default) or open
 
   // Static registry to track shape templates by VertID/PrimID
-  private static templateRegistry: Map<string, { verts: Vert[]; prims: Prim[]; isClosed: boolean }> = new Map()
+  private static templateRegistry: Map<
+    string,
+    { verts: Vert[]; prims: Prim[]; isClosed: boolean }
+  > = new Map()
 
-  constructor() {
+  constructor(init?: ShapePathInit) {
     super()
     this.token = "Shape.Path"
+    if (init) {
+      if (init.verts !== undefined) this.verts = init.verts
+      if (init.prims !== undefined) this.prims = init.prims
+      if (init.isClosed !== undefined) this.isClosed = init.isClosed
+      if (init.cutIndex !== undefined) this.cutIndex = init.cutIndex
+      if (init.locked !== undefined) this.locked = init.locked
+      if (init.xform !== undefined) this.xform = init.xform
+    }
   }
 
   static clearTemplateRegistry() {
-    this.templateRegistry.clear()
+    ShapePath.templateRegistry.clear()
   }
 
   static override fromXmlJson(node: XmlJsonElement): ShapePath {
@@ -53,7 +73,9 @@ export class ShapePath extends ShapeBase {
       }
       // Handle structured XML format (old format)
       else if (vertList.Vert) {
-        const verts = Array.isArray(vertList.Vert) ? vertList.Vert : [vertList.Vert]
+        const verts = Array.isArray(vertList.Vert)
+          ? vertList.Vert
+          : [vertList.Vert]
         for (const v of verts) {
           if (v.$) {
             path.verts.push({
@@ -84,7 +106,9 @@ export class ShapePath extends ShapeBase {
       }
       // Handle structured XML format
       else if (primList.Prim) {
-        const prims = Array.isArray(primList.Prim) ? primList.Prim : [primList.Prim]
+        const prims = Array.isArray(primList.Prim)
+          ? primList.Prim
+          : [primList.Prim]
         for (const p of prims) {
           if (p.$) {
             path.prims.push({
@@ -111,7 +135,11 @@ export class ShapePath extends ShapeBase {
     }
 
     // If this shape has no vert/prim data but has VertID/PrimID, copy from template
-    if (path.verts.length === 0 && vertID !== undefined && primID !== undefined) {
+    if (
+      path.verts.length === 0 &&
+      vertID !== undefined &&
+      primID !== undefined
+    ) {
       const template = ShapePath.templateRegistry.get(templateKey)
       if (template) {
         // Deep copy the verts and prims from the template

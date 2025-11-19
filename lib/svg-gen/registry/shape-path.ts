@@ -1,16 +1,16 @@
 import type { INode } from "svgson"
-import { g, leaf } from "../node-helpers"
+import { ShapePath } from "../../classes/elements/shapes/ShapePath"
 import {
   addPts,
   apply,
   arrayToMatrix,
+  type BBox,
   emptyBox,
   identity,
   matToSvg,
-  type BBox,
 } from "../_math"
+import { g, leaf } from "../node-helpers"
 import { colorForCutIndex } from "../palette"
-import { ShapePath } from "../../classes/elements/shapes/ShapePath"
 import type { ShapeRenderer } from "./index"
 
 export const pathRenderer: ShapeRenderer<ShapePath> = {

@@ -1,9 +1,13 @@
-import { expect, test, describe } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { readFileSync } from "node:fs"
-import { LightBurnBaseElement, LightBurnProject, generateLightBurnSvg } from "../index"
-import { ShapeRect } from "../lib/classes/elements/shapes/ShapeRect"
+import {
+  generateLightBurnSvg,
+  LightBurnBaseElement,
+  LightBurnProject,
+} from "../index"
 import { ShapeEllipse } from "../lib/classes/elements/shapes/ShapeEllipse"
 import { ShapePath } from "../lib/classes/elements/shapes/ShapePath"
+import { ShapeRect } from "../lib/classes/elements/shapes/ShapeRect"
 
 describe("LightBurn parsing and SVG generation", () => {
   test("parse simple rectangle project", () => {
@@ -34,11 +38,11 @@ describe("LightBurn parsing and SVG generation", () => {
     const project = LightBurnBaseElement.parse(xml)
     const svg = generateLightBurnSvg(project)
 
-    expect(svg).toContain('<svg')
-    expect(svg).toContain('<rect')
+    expect(svg).toContain("<svg")
+    expect(svg).toContain("<rect")
     expect(svg).toContain('width="100"')
     expect(svg).toContain('height="50"')
-    expect(svg).toContain('background-color: white')
+    expect(svg).toContain("background-color: white")
   })
 
   test("parse simple ellipse project", () => {
@@ -64,11 +68,11 @@ describe("LightBurn parsing and SVG generation", () => {
     const project = LightBurnBaseElement.parse(xml)
     const svg = generateLightBurnSvg(project)
 
-    expect(svg).toContain('<svg')
-    expect(svg).toContain('<ellipse')
+    expect(svg).toContain("<svg")
+    expect(svg).toContain("<ellipse")
     expect(svg).toContain('rx="30"')
     expect(svg).toContain('ry="20"')
-    expect(svg).toContain('background-color: white')
+    expect(svg).toContain("background-color: white")
   })
 
   test("parse simple path project", () => {
@@ -95,8 +99,8 @@ describe("LightBurn parsing and SVG generation", () => {
     const project = LightBurnBaseElement.parse(xml)
     const svg = generateLightBurnSvg(project)
 
-    expect(svg).toContain('<svg')
-    expect(svg).toContain('<path')
+    expect(svg).toContain("<svg")
+    expect(svg).toContain("<path")
     expect(svg).toContain('d="M')
 
     await expect(svg).toMatchSvgSnapshot(import.meta.path)
@@ -123,7 +127,12 @@ describe("LightBurn parsing and SVG generation", () => {
     expect(widthMatchWithMargin).toBeTruthy()
     expect(heightMatchWithMargin).toBeTruthy()
 
-    if (widthMatchNoMargin && heightMatchNoMargin && widthMatchWithMargin && heightMatchWithMargin) {
+    if (
+      widthMatchNoMargin &&
+      heightMatchNoMargin &&
+      widthMatchWithMargin &&
+      heightMatchWithMargin
+    ) {
       const widthNoMargin = parseFloat(widthMatchNoMargin[1]!)
       const heightNoMargin = parseFloat(heightMatchNoMargin[1]!)
       const widthWithMargin = parseFloat(widthMatchWithMargin[1]!)

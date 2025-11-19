@@ -8,51 +8,44 @@ import {
 
 describe("Build LightBurn project from scratch", () => {
   test("create project with path and custom cut settings", async () => {
-    // Create a new project
-    const project = new LightBurnProject()
-    project.appVersion = "1.7.03"
-    project.formatVersion = "1"
-    project.materialHeight = 0
-
     // Create a custom cut setting (e.g., for cutting wood)
-    const cutSetting = new CutSetting()
-    cutSetting.index = 0
-    cutSetting.name = "Wood Cut"
-    cutSetting.priority = 0
-    cutSetting.type = "Cut"
-    cutSetting.speed = 10 // mm/s
-    cutSetting.maxPower = 80 // 80% power
-    cutSetting.minPower = 60 // 60% power
-    cutSetting.numPasses = 2 // 2 passes
-    cutSetting.kerf = 0.2 // 0.2mm kerf offset
-
-    // Add the cut setting to the project
-    project.children.push(cutSetting)
+    const cutSetting = new CutSetting({
+      index: 0,
+      name: "Wood Cut",
+      priority: 0,
+      type: "Cut",
+      speed: 10, // mm/s
+      maxPower: 80, // 80% power
+      minPower: 60, // 60% power
+      numPasses: 2, // 2 passes
+      kerf: 0.2, // 0.2mm kerf offset
+    })
 
     // Create a simple square path
-    const path = new ShapePath()
-    path.cutIndex = 0 // Use the cut setting we created (index 0)
+    const path = new ShapePath({
+      cutIndex: 0, // Use the cut setting we created (index 0)
+      verts: [
+        { x: -25, y: -25 }, // bottom-left
+        { x: 25, y: -25 }, // bottom-right
+        { x: 25, y: 25 }, // top-right
+        { x: -25, y: 25 }, // top-left
+      ],
+      prims: [
+        { type: 0 }, // LineTo from vertex 0 to 1
+        { type: 0 }, // LineTo from vertex 1 to 2
+        { type: 0 }, // LineTo from vertex 2 to 3
+        { type: 0 }, // LineTo from vertex 3 to 0 (closing the path)
+      ],
+      isClosed: true,
+    })
 
-    // Define vertices for a 50x50mm square centered at origin
-    path.verts = [
-      { x: -25, y: -25 }, // bottom-left
-      { x: 25, y: -25 }, // bottom-right
-      { x: 25, y: 25 }, // top-right
-      { x: -25, y: 25 }, // top-left
-    ]
-
-    // Define primitives (line segments between vertices)
-    path.prims = [
-      { type: 0 }, // LineTo from vertex 0 to 1
-      { type: 0 }, // LineTo from vertex 1 to 2
-      { type: 0 }, // LineTo from vertex 2 to 3
-      { type: 0 }, // LineTo from vertex 3 to 0 (closing the path)
-    ]
-
-    path.isClosed = true
-
-    // Add the path to the project
-    project.children.push(path)
+    // Create a new project with the cut setting and path
+    const project = new LightBurnProject({
+      appVersion: "1.7.03",
+      formatVersion: "1",
+      materialHeight: 0,
+      children: [cutSetting, path],
+    })
 
     // Generate SVG to verify it works
     const svg = generateLightBurnSvg(project)
@@ -70,50 +63,45 @@ describe("Build LightBurn project from scratch", () => {
   })
 
   test("create project with curved path and advanced cut settings", async () => {
-    // Create a new project
-    const project = new LightBurnProject()
-    project.appVersion = "1.7.03"
-    project.formatVersion = "1"
-
     // Create an advanced cut setting with multiple passes and power ramping
-    const cutSetting = new CutSetting()
-    cutSetting.index = 0
-    cutSetting.name = "Acrylic Engrave"
-    cutSetting.priority = 1
-    cutSetting.type = "Cut"
-    cutSetting.speed = 150 // mm/s
-    cutSetting.maxPower = 50
-    cutSetting.minPower = 40
-    cutSetting.numPasses = 3
-    cutSetting.enablePowerRamp = true
-    cutSetting.rampLength = 2 // 2mm ramp
-
-    project.children.push(cutSetting)
+    const cutSetting = new CutSetting({
+      index: 0,
+      name: "Acrylic Engrave",
+      priority: 1,
+      type: "Cut",
+      speed: 150, // mm/s
+      maxPower: 50,
+      minPower: 40,
+      numPasses: 3,
+      enablePowerRamp: true,
+      rampLength: 2, // 2mm ramp
+    })
 
     // Create a path with bezier curves (rounded shape)
-    const path = new ShapePath()
-    path.cutIndex = 0
+    const path = new ShapePath({
+      cutIndex: 0,
+      verts: [
+        { x: 0, y: -30 }, // start point
+        { x: 30, y: 0, c: 1, c0x: 30, c0y: -16.5, c1x: 30, c1y: -16.5 }, // curve to right with control points
+        { x: 0, y: 30, c: 1, c0x: 30, c0y: 16.5, c1x: 30, c1y: 16.5 }, // curve to top
+        { x: -30, y: 0, c: 1, c0x: -30, c0y: 16.5, c1x: -30, c1y: 16.5 }, // curve to left
+        { x: 0, y: -30, c: 1, c0x: -30, c0y: -16.5, c1x: -30, c1y: -16.5 }, // curve back to start
+      ],
+      prims: [
+        { type: 1 }, // BezierTo
+        { type: 1 }, // BezierTo
+        { type: 1 }, // BezierTo
+        { type: 1 }, // BezierTo
+      ],
+      isClosed: true,
+    })
 
-    // Define vertices for a curved shape
-    path.verts = [
-      { x: 0, y: -30 }, // start point
-      { x: 30, y: 0, c: 1, c0x: 30, c0y: -16.5, c1x: 30, c1y: -16.5 }, // curve to right with control points
-      { x: 0, y: 30, c: 1, c0x: 30, c0y: 16.5, c1x: 30, c1y: 16.5 }, // curve to top
-      { x: -30, y: 0, c: 1, c0x: -30, c0y: 16.5, c1x: -30, c1y: 16.5 }, // curve to left
-      { x: 0, y: -30, c: 1, c0x: -30, c0y: -16.5, c1x: -30, c1y: -16.5 }, // curve back to start
-    ]
-
-    // Define primitives (bezier curves)
-    path.prims = [
-      { type: 1 }, // BezierTo
-      { type: 1 }, // BezierTo
-      { type: 1 }, // BezierTo
-      { type: 1 }, // BezierTo
-    ]
-
-    path.isClosed = true
-
-    project.children.push(path)
+    // Create a new project
+    const project = new LightBurnProject({
+      appVersion: "1.7.03",
+      formatVersion: "1",
+      children: [cutSetting, path],
+    })
 
     // Generate SVG
     const svg = generateLightBurnSvg(project)
