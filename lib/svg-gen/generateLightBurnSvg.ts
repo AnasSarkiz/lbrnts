@@ -224,38 +224,31 @@ function svgForShape(shape: ShapeBase): INode {
 
   if (shape instanceof ShapePath) {
     let d = ""
-    let vertIdx = 0
 
-    for (const prim of shape.prims) {
-      const type = prim.type
-      if (type === 0) {
-        // LineTo
-        if (vertIdx < shape.verts.length) {
-          const v = shape.verts[vertIdx]!
-          if (vertIdx === 0) {
-            d += `M ${v.x} ${v.y}`
-          } else {
-            d += ` L ${v.x} ${v.y}`
-          }
-          vertIdx++
-        }
-      } else if (type === 1) {
-        // BezierTo (cubic bezier curve)
-        const v = shape.verts[vertIdx]
-        if (v && vertIdx > 0) {
-          const prevV = shape.verts[vertIdx - 1]!
+    // Process each primitive which describes the segment FROM vertex[i] TO vertex[i+1]
+    for (let i = 0; i < shape.prims.length; i++) {
+      const prim = shape.prims[i]!
+      const startV = shape.verts[i]!
+      const endV = shape.verts[(i + 1) % shape.verts.length]!
 
-          // Get control points:
-          // First control point (c1) comes from previous vertex (outgoing)
-          // Second control point (c0) comes from current vertex (incoming)
-          const c1x = prevV.c1x ?? prevV.x
-          const c1y = prevV.c1y ?? prevV.y
-          const c0x = v.c0x ?? v.x
-          const c0y = v.c0y ?? v.y
+      if (i === 0) {
+        // First vertex - move to start
+        d += `M ${startV.x} ${startV.y}`
+      }
 
-          d += ` C ${c1x} ${c1y} ${c0x} ${c0y} ${v.x} ${v.y}`
-          vertIdx++
-        }
+      if (prim.type === 0) {
+        // LineTo - straight line to next vertex
+        d += ` L ${endV.x} ${endV.y}`
+      } else if (prim.type === 1) {
+        // BezierTo - curved line to next vertex using control points
+        // Control points: c0 from start vertex (outgoing), c1 from end vertex (incoming)
+        const c0x = startV.c0x ?? startV.x
+        const c0y = startV.c0y ?? startV.y
+        const c1x = endV.c1x ?? endV.x
+        const c1y = endV.c1y ?? endV.y
+
+        // Use cubic bezier for two control points
+        d += ` C ${c0x} ${c0y} ${c1x} ${c1y} ${endV.x} ${endV.y}`
       }
     }
 
@@ -278,6 +271,7 @@ function svgForShape(shape: ShapeBase): INode {
             d,
             fill: "none",
             stroke: strokeColor,
+            "stroke-width": "0.1",
           },
           children: [],
         },
