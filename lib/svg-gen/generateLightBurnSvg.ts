@@ -431,8 +431,10 @@ export function generateLightBurnSvg(
         type: "element",
         value: "",
         attributes: {
-          width: "100%",
-          height: "100%",
+          x: String(viewBoxMinX),
+          y: String(viewBoxMinY),
+          width: String(width),
+          height: String(height),
           fill: "white",
         },
         children: [],
