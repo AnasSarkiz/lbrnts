@@ -218,8 +218,14 @@ export function generateLightBurnSvg(
     bbox = boxUnion(bbox, bboxOfShape(shape))
   }
 
-  const contentWidth = bbox.maxX - bbox.minX || 100
-  const contentHeight = bbox.maxY - bbox.minY || 100
+  // Check if bbox is still empty (no valid shapes or all shapes have no geometry)
+  const isEmptyBbox = bbox.minX === Infinity || bbox.maxX === -Infinity
+  if (isEmptyBbox) {
+    bbox = { minX: 0, minY: 0, maxX: 100, maxY: 100 }
+  }
+
+  const contentWidth = bbox.maxX - bbox.minX
+  const contentHeight = bbox.maxY - bbox.minY
 
   // Apply margin to dimensions and viewBox
   const width = contentWidth + 2 * margin
