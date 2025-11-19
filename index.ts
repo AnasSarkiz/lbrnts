@@ -32,6 +32,7 @@ export { ShapeText } from "./lib/classes/elements/shapes/ShapeText"
 
 // Export SVG generation
 export { generateLightBurnSvg } from "./lib/svg-gen/generateLightBurnSvg"
+export type { GenerateSvgOptions } from "./lib/svg-gen/generateLightBurnSvg"
 
 // Export types
 export type { XmlJson, XmlJsonElement, XmlJsonValue } from "./lib/xml-parsing/xml-parsing-types"

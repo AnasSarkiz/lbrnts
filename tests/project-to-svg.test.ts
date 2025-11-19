@@ -101,4 +101,37 @@ describe("LightBurn parsing and SVG generation", () => {
 
     await expect(svg).toMatchSvgSnapshot(import.meta.path)
   })
+
+  test("generate SVG with margin", () => {
+    const xml = readFileSync("tests/fixtures/simple-rect.lbrn2", "utf-8")
+    const project = LightBurnBaseElement.parse(xml)
+
+    // Generate without margin
+    const svgNoMargin = generateLightBurnSvg(project)
+
+    // Generate with margin
+    const svgWithMargin = generateLightBurnSvg(project, { margin: 10 })
+
+    // Extract dimensions from both SVGs
+    const widthMatchNoMargin = svgNoMargin.match(/width="(\d+)"/)
+    const heightMatchNoMargin = svgNoMargin.match(/height="(\d+)"/)
+    const widthMatchWithMargin = svgWithMargin.match(/width="(\d+)"/)
+    const heightMatchWithMargin = svgWithMargin.match(/height="(\d+)"/)
+
+    expect(widthMatchNoMargin).toBeTruthy()
+    expect(heightMatchNoMargin).toBeTruthy()
+    expect(widthMatchWithMargin).toBeTruthy()
+    expect(heightMatchWithMargin).toBeTruthy()
+
+    if (widthMatchNoMargin && heightMatchNoMargin && widthMatchWithMargin && heightMatchWithMargin) {
+      const widthNoMargin = parseFloat(widthMatchNoMargin[1]!)
+      const heightNoMargin = parseFloat(heightMatchNoMargin[1]!)
+      const widthWithMargin = parseFloat(widthMatchWithMargin[1]!)
+      const heightWithMargin = parseFloat(heightMatchWithMargin[1]!)
+
+      // Width and height should be 20 units larger (10 margin on each side)
+      expect(widthWithMargin).toBe(widthNoMargin + 20)
+      expect(heightWithMargin).toBe(heightNoMargin + 20)
+    }
+  })
 })
