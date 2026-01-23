@@ -13,7 +13,7 @@ import {
   matToSvg,
   mul,
 } from "../_math"
-import { generateScanLines } from "../fill-patterns"
+import { fillSettingsToPatternParams } from "../fill-patterns"
 import { g, leaf } from "../node-helpers"
 import { colorForCutIndex } from "../palette"
 import {
@@ -191,52 +191,31 @@ export const groupRenderer: ShapeRenderer<ShapeGroup> = {
           (cutSetting.type === "Scan" || cutSetting.type === "Scan+Cut")
 
         if (shouldShowFill && cutSetting) {
-          // Calculate bounding box for scan lines
-          const bbox = shapeChildren.reduce(
-            (bb, c) => boxUnion(bb, bboxOfShape(c)),
-            emptyBox(),
-          )
-
           const fillSettings = {
             interval: cutSetting.interval || 0.1,
             angle: cutSetting.angle || 0,
             crossHatch: cutSetting.crossHatch || false,
           }
 
-          const fillLines = generateScanLines(
-            bbox,
-            fillSettings,
-            stroke,
-            options.strokeWidth,
+          // Register pattern and get ID
+          const patternId = options.patternRegistry.getOrCreate(
+            fillSettingsToPatternParams(
+              fillSettings,
+              stroke,
+              options.strokeWidth,
+            ),
           )
 
-          // Create a clip-path using the combined compound path with nonzero fill-rule
-          const clipId = `clip-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`
-
-          const clipPath: INode = {
-            name: "clipPath",
-            type: "element",
-            value: "",
-            attributes: { id: clipId },
-            children: [
-              leaf("path", {
-                d: combinedPathData,
-                "fill-rule": "nonzero",
-                "clip-rule": "nonzero",
-              }),
-            ],
-          }
-
-          const clippedGroup: INode = {
-            name: "g",
-            type: "element",
-            value: "",
-            attributes: { "clip-path": `url(#${clipId})` },
-            children: fillLines,
-          }
-
-          children.push(clipPath)
-          children.push(clippedGroup)
+          // Add filled compound path with pattern - the path naturally clips the fill
+          // Using nonzero fill-rule ensures holes are properly excluded
+          children.push(
+            leaf("path", {
+              d: combinedPathData,
+              fill: `url(#${patternId})`,
+              "fill-rule": "nonzero",
+              stroke: "none",
+            }),
+          )
         }
 
         // Add the combined outline path with nonzero fill-rule

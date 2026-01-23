@@ -1,7 +1,9 @@
 import type { INode } from "svgson"
-import type { BBox } from "./_math"
 import { leaf } from "./node-helpers"
 
+/**
+ * Fill settings for hatch patterns
+ */
 export interface FillSettings {
   interval: number // Line spacing in mm
   angle: number // Fill angle in degrees
@@ -9,185 +11,122 @@ export interface FillSettings {
 }
 
 /**
- * Generate scan lines for filling a rectangular bounding box
+ * Parameters for creating a hatch pattern
  */
-export function generateScanLines(
-  bbox: BBox,
+export interface HatchPatternParams {
+  interval: number
+  angleDeg: number
+  crossHatch: boolean
+  color: string
+  strokeWidth: number
+  opacity?: number // Default: 0.8
+}
+
+/**
+ * Generate a deterministic pattern ID from parameters.
+ * Uses fixed decimal places for stable IDs across floating point values.
+ */
+function generatePatternId(params: HatchPatternParams): string {
+  const opacity = params.opacity ?? 0.8
+  const colorHex = params.color.replace("#", "")
+  return `hatch-${params.interval.toFixed(4)}-${params.angleDeg}-${params.crossHatch}-${colorHex}-${params.strokeWidth.toFixed(4)}-${opacity.toFixed(2)}`
+}
+
+/**
+ * Create an SVG <pattern> element for hatch fill.
+ *
+ * The pattern uses patternUnits="userSpaceOnUse" and applies rotation
+ * via patternTransform. The path extends beyond the cell boundaries
+ * to ensure seamless tiling at any angle.
+ */
+export function createHatchPattern(params: HatchPatternParams): INode {
+  const { interval, angleDeg, crossHatch, color, strokeWidth } = params
+  const opacity = params.opacity ?? 0.8
+  const id = generatePatternId(params)
+
+  // Path extends beyond cell boundaries for seamless tiling.
+  // We draw a horizontal line through the center of the cell,
+  // extended to -interval...+interval to cover diagonal cases.
+  let d = `M ${-interval} 0 L ${interval} 0`
+
+  if (crossHatch) {
+    // Add perpendicular (vertical) line for cross-hatching
+    d += ` M 0 ${-interval} L 0 ${interval}`
+  }
+
+  return {
+    name: "pattern",
+    type: "element",
+    value: "",
+    attributes: {
+      id,
+      patternUnits: "userSpaceOnUse",
+      width: String(interval),
+      height: String(interval),
+      patternTransform: `rotate(${angleDeg})`,
+    },
+    children: [
+      leaf("path", {
+        d,
+        stroke: color,
+        "stroke-width": String(strokeWidth),
+        "stroke-opacity": String(opacity),
+      }),
+    ],
+  }
+}
+
+/**
+ * Registry for managing unique hatch patterns.
+ *
+ * Patterns are deduplicated by their parameter signature, ensuring
+ * that identical hatch configurations share a single <pattern> definition.
+ */
+export class HatchPatternRegistry {
+  private patterns = new Map<string, INode>()
+
+  /**
+   * Get or create a pattern for the given parameters.
+   * @returns The pattern ID to use in fill="url(#id)"
+   */
+  getOrCreate(params: HatchPatternParams): string {
+    const id = generatePatternId(params)
+    if (!this.patterns.has(id)) {
+      this.patterns.set(id, createHatchPattern(params))
+    }
+    return id
+  }
+
+  /**
+   * Get all registered patterns for the <defs> section.
+   */
+  getPatterns(): INode[] {
+    return Array.from(this.patterns.values())
+  }
+
+  /**
+   * Check if any patterns have been registered.
+   */
+  hasPatterns(): boolean {
+    return this.patterns.size > 0
+  }
+}
+
+/**
+ * Convert FillSettings to HatchPatternParams with render context.
+ */
+export function fillSettingsToPatternParams(
   settings: FillSettings,
   color: string,
   strokeWidth: number,
-): INode[] {
-  const lines: INode[] = []
-
-  // Convert angle to radians
-  const angleRad = (settings.angle * Math.PI) / 180
-
-  // Generate primary fill lines
-  const primaryLines = generateLinesAtAngle(
-    bbox,
-    settings.interval,
-    angleRad,
+  opacity?: number,
+): HatchPatternParams {
+  return {
+    interval: settings.interval,
+    angleDeg: settings.angle,
+    crossHatch: settings.crossHatch,
     color,
     strokeWidth,
-  )
-  lines.push(...primaryLines)
-
-  // Generate crosshatch if enabled
-  if (settings.crossHatch) {
-    const perpAngle = angleRad + Math.PI / 2
-    const crossLines = generateLinesAtAngle(
-      bbox,
-      settings.interval,
-      perpAngle,
-      color,
-      strokeWidth,
-    )
-    lines.push(...crossLines)
-  }
-
-  return lines
-}
-
-/**
- * Generate parallel lines at a given angle through a bounding box
- */
-function generateLinesAtAngle(
-  bbox: BBox,
-  interval: number,
-  angle: number,
-  color: string,
-  strokeWidth: number,
-): INode[] {
-  const lines: INode[] = []
-
-  // Calculate the diagonal of the bbox to determine how many lines we need
-  const diagonal = Math.sqrt(
-    Math.pow(bbox.maxX - bbox.minX, 2) + Math.pow(bbox.maxY - bbox.minY, 2),
-  )
-
-  // Calculate direction vector for the fill lines
-  const dx = Math.cos(angle)
-  const dy = Math.sin(angle)
-
-  // Perpendicular vector for spacing between lines
-  const px = -Math.sin(angle)
-  const py = Math.cos(angle)
-
-  // Center of the bbox
-  const cx = (bbox.minX + bbox.maxX) / 2
-  const cy = (bbox.minY + bbox.maxY) / 2
-
-  // Number of lines needed (add extra to ensure full coverage)
-  const numLines = Math.ceil(diagonal / interval) + 2
-
-  // Generate lines
-  for (let i = -numLines / 2; i <= numLines / 2; i++) {
-    const offset = i * interval
-
-    // Start point of the line (offset from center)
-    const startX = cx + px * offset - dx * diagonal
-    const startY = cy + py * offset - dy * diagonal
-
-    // End point of the line
-    const endX = cx + px * offset + dx * diagonal
-    const endY = cy + py * offset + dy * diagonal
-
-    // Clip line to bbox and add if it intersects
-    const clipped = clipLineToBBox(
-      startX,
-      startY,
-      endX,
-      endY,
-      bbox.minX,
-      bbox.minY,
-      bbox.maxX,
-      bbox.maxY,
-    )
-
-    if (clipped) {
-      lines.push(
-        leaf("line", {
-          x1: String(clipped.x1),
-          y1: String(clipped.y1),
-          x2: String(clipped.x2),
-          y2: String(clipped.y2),
-          stroke: color,
-          "stroke-width": String(strokeWidth),
-          "stroke-opacity": "0.8",
-        }),
-      )
-    }
-  }
-
-  return lines
-}
-
-/**
- * Clip a line to a bounding box using Cohen-Sutherland algorithm
- */
-function clipLineToBBox(
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-  minX: number,
-  minY: number,
-  maxX: number,
-  maxY: number,
-): { x1: number; y1: number; x2: number; y2: number } | null {
-  const INSIDE = 0
-  const LEFT = 1
-  const RIGHT = 2
-  const BOTTOM = 4
-  const TOP = 8
-
-  function computeOutCode(x: number, y: number): number {
-    let code = INSIDE
-    if (x < minX) code |= LEFT
-    else if (x > maxX) code |= RIGHT
-    if (y < minY) code |= BOTTOM
-    else if (y > maxY) code |= TOP
-    return code
-  }
-
-  let outcode1 = computeOutCode(x1, y1)
-  let outcode2 = computeOutCode(x2, y2)
-
-  while (true) {
-    if (!(outcode1 | outcode2)) {
-      // Both points inside
-      return { x1, y1, x2, y2 }
-    } else if (outcode1 & outcode2) {
-      // Both points outside on same side
-      return null
-    }
-
-    // At least one point is outside
-    const outcodeOut = outcode1 ? outcode1 : outcode2
-    let x: number, y: number
-
-    if (outcodeOut & TOP) {
-      x = x1 + ((x2 - x1) * (maxY - y1)) / (y2 - y1)
-      y = maxY
-    } else if (outcodeOut & BOTTOM) {
-      x = x1 + ((x2 - x1) * (minY - y1)) / (y2 - y1)
-      y = minY
-    } else if (outcodeOut & RIGHT) {
-      y = y1 + ((y2 - y1) * (maxX - x1)) / (x2 - x1)
-      x = maxX
-    } else {
-      y = y1 + ((y2 - y1) * (minX - x1)) / (x2 - x1)
-      x = minX
-    }
-
-    if (outcodeOut === outcode1) {
-      x1 = x
-      y1 = y
-      outcode1 = computeOutCode(x1, y1)
-    } else {
-      x2 = x
-      y2 = y
-      outcode2 = computeOutCode(x2, y2)
-    }
+    opacity,
   }
 }

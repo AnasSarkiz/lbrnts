@@ -2,7 +2,7 @@ import type { INode } from "svgson"
 import type { CutSetting } from "../../classes/elements/CutSetting"
 import type { ShapeBase } from "../../classes/elements/shapes/ShapeBase"
 import { type BBox, boxUnion, emptyBox } from "../_math"
-import { DEFAULT_OPTIONS, type GenerateSvgOptions } from "../options"
+import type { HatchPatternRegistry } from "../fill-patterns"
 import { bitmapRenderer } from "./shape-bitmap"
 import { ellipseRenderer } from "./shape-ellipse"
 import { groupRenderer } from "./shape-group"
@@ -12,6 +12,7 @@ import { textRenderer } from "./shape-text"
 
 export interface RenderOptions {
   strokeWidth: number
+  patternRegistry: HatchPatternRegistry
 }
 
 export interface ShapeRenderer<T extends ShapeBase = ShapeBase> {
@@ -58,11 +59,7 @@ export function measure(shapes: ShapeBase[]): BBox {
 export function renderAll(
   shapes: ShapeBase[],
   cutSettings: Map<number, CutSetting>,
-  svgOptions?: GenerateSvgOptions,
+  options: RenderOptions,
 ): INode[] {
-  const renderOptions: RenderOptions = {
-    strokeWidth:
-      svgOptions?.defaultStrokeWidth ?? DEFAULT_OPTIONS.defaultStrokeWidth,
-  }
-  return shapes.map((s) => svgForShape(s, cutSettings, renderOptions))
+  return shapes.map((s) => svgForShape(s, cutSettings, options))
 }
