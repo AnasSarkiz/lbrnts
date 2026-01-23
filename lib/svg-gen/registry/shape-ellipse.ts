@@ -1,5 +1,4 @@
 import type { INode } from "svgson"
-import type { CutSetting } from "../../classes/elements/CutSetting"
 import { ShapeEllipse } from "../../classes/elements/shapes/ShapeEllipse"
 import {
   addPts,
@@ -10,10 +9,10 @@ import {
   identity,
   matToSvg,
 } from "../_math"
-import { generateScanLines } from "../fill-patterns"
+import { fillSettingsToPatternParams } from "../fill-patterns"
 import { g, leaf } from "../node-helpers"
 import { colorForCutIndex } from "../palette"
-import type { RenderOptions, ShapeRenderer } from "./index"
+import type { ShapeRenderer } from "./index"
 
 export const ellipseRenderer: ShapeRenderer<ShapeEllipse> = {
   match: (s): s is ShapeEllipse => s instanceof ShapeEllipse,
@@ -52,31 +51,41 @@ export const ellipseRenderer: ShapeRenderer<ShapeEllipse> = {
       (cutSetting.type === "Scan" || cutSetting.type === "Scan+Cut")
 
     if (shouldShowFill && cutSetting) {
-      // Generate fill pattern in local coordinates (bounding box of ellipse)
-      const localBBox: BBox = {
-        minX: -rx,
-        minY: -ry,
-        maxX: rx,
-        maxY: ry,
-      }
-
       const fillSettings = {
         interval: cutSetting.interval || 0.1,
         angle: cutSetting.angle || 0,
         crossHatch: cutSetting.crossHatch || false,
       }
 
-      const fillLines = generateScanLines(
-        localBBox,
-        fillSettings,
-        stroke,
-        options.strokeWidth,
+      // Register pattern and get ID
+      const patternId = options.patternRegistry.getOrCreate(
+        fillSettingsToPatternParams(fillSettings, stroke, options.strokeWidth),
       )
-      children.push(...fillLines)
+
+      // Add filled ellipse/circle with pattern (separate from outline)
+      // The ellipse/circle shape naturally clips the pattern fill
+      const fillChild =
+        rx === ry
+          ? leaf("circle", {
+              cx: "0",
+              cy: "0",
+              r: String(rx),
+              fill: `url(#${patternId})`,
+              stroke: "none",
+            })
+          : leaf("ellipse", {
+              cx: "0",
+              cy: "0",
+              rx: String(rx),
+              ry: String(ry),
+              fill: `url(#${patternId})`,
+              stroke: "none",
+            })
+      children.push(fillChild)
     }
 
     // Always add the outline
-    const child =
+    const outlineChild =
       rx === ry
         ? leaf("circle", {
             cx: "0",
@@ -93,7 +102,7 @@ export const ellipseRenderer: ShapeRenderer<ShapeEllipse> = {
             fill: "none",
             stroke,
           })
-    children.push(child)
+    children.push(outlineChild)
 
     return g({ transform }, children)
   },

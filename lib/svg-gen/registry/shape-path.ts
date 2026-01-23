@@ -1,5 +1,4 @@
 import type { INode } from "svgson"
-import type { CutSetting } from "../../classes/elements/CutSetting"
 import { ShapePath } from "../../classes/elements/shapes/ShapePath"
 import {
   addPts,
@@ -10,10 +9,10 @@ import {
   identity,
   matToSvg,
 } from "../_math"
-import { generateScanLines } from "../fill-patterns"
+import { fillSettingsToPatternParams } from "../fill-patterns"
 import { g, leaf } from "../node-helpers"
 import { colorForCutIndex } from "../palette"
-import type { RenderOptions, ShapeRenderer } from "./index"
+import type { ShapeRenderer } from "./index"
 
 export const pathRenderer: ShapeRenderer<ShapePath> = {
   match: (s): s is ShapePath => s instanceof ShapePath,
@@ -31,7 +30,7 @@ export const pathRenderer: ShapeRenderer<ShapePath> = {
 
     const children: INode[] = []
 
-    // Build the path data string first (we'll need it for both outline and clipping)
+    // Build the path data string
     let d = ""
     for (let i = 0; i < p.prims.length; i++) {
       const prim = p.prims[i]!
@@ -74,49 +73,26 @@ export const pathRenderer: ShapeRenderer<ShapePath> = {
       (cutSetting.type === "Scan" || cutSetting.type === "Scan+Cut")
 
     if (shouldShowFill && cutSetting) {
-      // Calculate bounding box of the path
-      const bbox = addPts(
-        emptyBox(),
-        p.verts.map((v) => ({ x: v.x, y: v.y })),
-      )
-
       const fillSettings = {
         interval: cutSetting.interval || 0.1,
         angle: cutSetting.angle || 0,
         crossHatch: cutSetting.crossHatch || false,
       }
 
-      const fillLines = generateScanLines(
-        bbox,
-        fillSettings,
-        stroke,
-        options.strokeWidth,
+      // Register pattern and get ID
+      const patternId = options.patternRegistry.getOrCreate(
+        fillSettingsToPatternParams(fillSettings, stroke, options.strokeWidth),
       )
 
-      // Use the path as a clip-path to ensure scan lines only appear inside the shape
-      // Generate a unique ID for this clip path
-      const clipId = `clip-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-
-      // Create clipPath definition
-      const clipPath = {
-        name: "clipPath",
-        type: "element",
-        value: "",
-        attributes: { id: clipId },
-        children: [leaf("path", { d })],
-      }
-
-      // Wrap scan lines in a group with clip-path
-      const clippedGroup = {
-        name: "g",
-        type: "element",
-        value: "",
-        attributes: { "clip-path": `url(#${clipId})` },
-        children: fillLines,
-      }
-
-      children.push(clipPath)
-      children.push(clippedGroup)
+      // Add filled path with pattern - the path shape naturally clips the fill
+      children.push(
+        leaf("path", {
+          d,
+          fill: `url(#${patternId})`,
+          "fill-rule": "nonzero",
+          stroke: "none",
+        }),
+      )
     }
 
     // Always add the outline

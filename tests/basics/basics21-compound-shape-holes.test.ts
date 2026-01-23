@@ -70,21 +70,24 @@ test("ShapeGroup with outer rect and inner hole renders with nonzero fill-rule",
   expect(svg).toContain("fill-rule")
   expect(svg).toContain("nonzero")
 
+  // Verify pattern-based fill is used instead of clipPath + scan lines
+  expect(svg).toContain("<pattern")
+  expect(svg).toContain("<defs>")
+  expect(svg).toContain('fill="url(#hatch-')
+
   // Verify it's a compound path (both shapes combined into path elements)
-  // We expect 2 path elements: one inside clipPath for clipping, one for outline stroke
+  // We expect 2 path elements with d attribute: one for fill, one for outline stroke
+  // Plus one path inside the pattern definition
   const pathMatches = svg.match(/<path[^>]+d="([^"]+)"/g) || []
-  expect(pathMatches.length).toBe(2)
+  expect(pathMatches.length).toBe(3) // 1 in pattern + 2 for compound shape (fill + stroke)
 
-  // Both paths should have the same combined path data with 2 "M" commands
-  // (one for outer square, one for inner hole)
-  for (const pathMatch of pathMatches) {
-    const mCount = (pathMatch.match(/M\s/g) || []).length
-    expect(mCount).toBe(2)
-  }
-
-  // Verify clipPath is created for scan fill
-  expect(svg).toContain("clipPath")
-  expect(svg).toContain("clip-rule")
+  // The compound paths should have 2 "M" commands (one for outer, one for inner hole)
+  // Filter to just the paths with 2 M commands (the compound shapes)
+  const compoundPaths = pathMatches.filter((p) => {
+    const mCount = (p.match(/M\s/g) || []).length
+    return mCount === 2
+  })
+  expect(compoundPaths.length).toBe(2) // fill path and stroke path
 
   await expect(svg).toMatchSvgSnapshot(import.meta.path)
 })

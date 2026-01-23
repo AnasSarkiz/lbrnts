@@ -9,7 +9,7 @@ import {
   identity,
   matToSvg,
 } from "../_math"
-import { generateScanLines } from "../fill-patterns"
+import { fillSettingsToPatternParams } from "../fill-patterns"
 import { g, leaf } from "../node-helpers"
 import { colorForCutIndex } from "../palette"
 import type { ShapeRenderer } from "./index"
@@ -52,27 +52,30 @@ export const rectRenderer: ShapeRenderer<ShapeRect> = {
       (cutSetting.type === "Scan" || cutSetting.type === "Scan+Cut")
 
     if (shouldShowFill && cutSetting) {
-      // Generate fill pattern in local coordinates (before transform)
-      const localBBox: BBox = {
-        minX: 0,
-        minY: 0,
-        maxX: w,
-        maxY: h,
-      }
-
       const fillSettings = {
         interval: cutSetting.interval || 0.1,
         angle: cutSetting.angle || 0,
         crossHatch: cutSetting.crossHatch || false,
       }
 
-      const fillLines = generateScanLines(
-        localBBox,
-        fillSettings,
-        stroke,
-        options.strokeWidth,
+      // Register pattern and get ID
+      const patternId = options.patternRegistry.getOrCreate(
+        fillSettingsToPatternParams(fillSettings, stroke, options.strokeWidth),
       )
-      children.push(...fillLines)
+
+      // Add filled rect with pattern (separate from outline)
+      children.push(
+        leaf("rect", {
+          x: "0",
+          y: "0",
+          width: String(w),
+          height: String(h),
+          rx: String(cr),
+          ry: String(cr),
+          fill: `url(#${patternId})`,
+          stroke: "none",
+        }),
+      )
     }
 
     // Always add the outline

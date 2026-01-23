@@ -10,9 +10,11 @@ test("Scan vs Cut - one filled pad, one outline only", async () => {
 
   expect(svg).toContain("<svg")
 
-  // Should have scan lines (from Scan mode rect)
-  expect(svg).toContain("<line")
+  // Should have pattern-based fill (from Scan mode rect)
+  expect(svg).toContain("<pattern")
+  expect(svg).toContain("<defs>")
   expect(svg).toContain('stroke-opacity="0.8"')
+  expect(svg).toContain('fill="url(#hatch-')
 
   // Should have both rects
   const rectCount = (svg.match(/<rect/g) || []).length
